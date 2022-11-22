@@ -19,13 +19,7 @@ Component Wrap(std::string name, Component component) {
 }
 int main() {
   ScreenInteractive screen = ScreenInteractive::Fullscreen();
-  
-  std::vector<std::vector<Element>> table_elements = {
-    {"hi", "bye"},
-    {}
-  };
-  auto table = ftxui::Table(table_elements);
-  
+
   auto card = [&](const char* t) {
     return Button(t, []{});
   };
@@ -42,27 +36,20 @@ int main() {
 
   }) | border;
   
-  auto cards = Container::Horizontal({
-    Button("X", [&] {}) | border,
-    Button("Y", [&] {}) | border,
-    Button("Z", [&] {}) | border,
+  auto card_row1 = [&](const char* but1, const char* but2, const char* but3, const char* but4) {
+    auto container = Container::Horizontal({});
+    container->Add(Button(but1, [&]() {}, ButtonOption::Simple()) | size(WIDTH, EQUAL, 20) | size(HEIGHT, EQUAL, 8));
+    container->Add(Button(but2, [&]() {}, ButtonOption::Simple()) | size(WIDTH, EQUAL, 20) | size(HEIGHT, EQUAL, 8));
+    container->Add(Button(but3, [&]() {}, ButtonOption::Simple()) | size(WIDTH, EQUAL, 20) | size(HEIGHT, EQUAL, 8));
+    container->Add(Button(but4, [&]() {}, ButtonOption::Simple()) | size(WIDTH, EQUAL, 20) | size(HEIGHT, EQUAL, 8));
+    return container;
+  };
+
+  auto cards = Container::Vertical({
+    card_row1("0",  "1",  "2",  "3"),
+    card_row1("4",  "5",  "6",  "7"),
   });
-  
-  auto component = Renderer(cards, [&] {
-    return vbox({
-        cards->Render(),
-        cards->Render(),
-    });
-  });
- 
-//  for (int i = 0; i < 3; i++) {
-//    cards->Add(Container::Vertical({
-//      card("card A"),
-//      card("card B"),
-//      card("card C")
-//    }));
-//  }
-  
+   
   auto winsLosses = Container::Horizontal({
   
   }) | border;
@@ -72,21 +59,23 @@ int main() {
     Button("Next Turn", [] {})
   }) | border;
   
-  auto cardRenderer = Renderer([](Element e) {
-    return e;
+  auto cardRenderer = Renderer(cards, [&] {
+    return vbox({
+      cards->Render() | vscroll_indicator | frame | border
+    });
   });
   
-  screen.Loop(component);
+  screen.Loop(cardRenderer);
 
-  // auto renderer = Renderer(layout, [&] {
-  //   return vbox({
-  //     name->Render(),
-  //     effects->Render(),
-  //     stats->Render(),
-  //     winsLosses->Render(),
-  //     controls->Render(),
-  //   }) | border,
-  // });
-  // 
-  // screen.Loop(renderer);
+  //auto renderer = Renderer(layout, [&] {
+  //  return vbox({
+  //    name->Render(),
+  //    effects->Render(),
+  //    stats->Render(),
+  //    winsLosses->Render(),
+  //    controls->Render(),
+  //  }) | border,
+  //});
+  //
+  //screen.Loop(renderer);
 }
