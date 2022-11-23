@@ -40,3 +40,7 @@ Data Structures :
 + virtual Remove(key): void = 0
 + virual Size(): int = 0
 ```
+
+
+
+NOTE: Work on the templates, I put implementations into the header file. Even though compiling headers is weird.
