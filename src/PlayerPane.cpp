@@ -35,7 +35,8 @@ PlayerPane::PlayerPane(bool isTurn)
 }
 
 PlayerPane::~PlayerPane() {
-  
+  // no dynamic memory to deal with
+  //  RAII takes care of everything in this class
 }
 
 Component PlayerPane::MakeEffectsContainer() {
@@ -153,6 +154,7 @@ void PlayerPane::ToggleTurn() {
 void PlayerPane::PerformActions(PlayerPane& other_pane) {
   // this gets called at the start of THIS player's turn
   // this should only happen this it is this player's turn and NOT the other player's turn
+  // the OTHER player is attacking THIS player
   if (IsActiveTurn() && !other_pane.IsActiveTurn()) {
     CircularQueue<std::string>& q = other_pane.GetCardSelectionQueue();
     const ClosedHashTable<std::string, CardInfo>& ht = other_pane.GetCardInfoHT();

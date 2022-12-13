@@ -29,14 +29,12 @@ class CardInfo {
     }
 
     std::shared_ptr<PlayerEffect> GetEffect() {
-      if (!has_effect)
-        return nullptr;
       return effect;
     }
+
   private:
     std::string name;
     int durationInTurns;
-    bool has_effect;
     std::shared_ptr<PlayerEffect> effect;
 };
 

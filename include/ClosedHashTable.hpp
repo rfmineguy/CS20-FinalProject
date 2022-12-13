@@ -30,20 +30,46 @@ private:
   typename HashTable<Key, Val>::Record* buffer;
 };
 
+// =====================================================================================
+//  Implementation details for ClosedHashTable<T> below
+// =====================================================================================
+
+// =====================================================================================
+// Constructor for ClosedHashTable<T>
+//   - Notes
+//     \__ M is required to be a power of 2 for this class (M = 2^X)
+//   - O(M)
+//     \__ initialization of buffer's keys to the EMPTY key
+// =====================================================================================
 HT_PFX ClosedHashTable<Key, Val>::ClosedHashTable(Key tombstone, Key empty)
 :M(8), size(0), TOMBSTONE(tombstone), EMPTY(empty), buffer(new typename HashTable<Key, Val>::Record[M]) {
   for (int i = 0; i < M; i++) {
     buffer[i].key = EMPTY;
   }
 }
+
+// =====================================================================================
+// Destructor for ClosedHashTable<T>
+//   - O(1)
+//     \__ simply has to delete the buffer allocation and reset size to 0
+// =====================================================================================
 HT_PFX ClosedHashTable<Key, Val>::~ClosedHashTable() {
   delete[] buffer;
   buffer = nullptr;
   size = 0;
 }
+
+// =====================================================================================
+// Hash function for ClosedHashTable<T>
+//   - Notes
+//     \__ I figured writing a hash function that would break for certain data types was
+//            not a good idea, so I instead use the actual byte values to do the calculations
+//            instead. The only downside to this is that what was O(1) is now O(n)
+//     \__ The only slight oversights might be overflows and/or mod bias
+//   - O(n)
+//     \__ Required to loop over bytes
+// =====================================================================================
 HT_PFX int ClosedHashTable<Key, Val>::Hash(const Key& k) const {
-  // TODO: not a great solution, what if k can't be modded
-  
   // read each byte of key (regardless of actual underlying type)
   const char* vPtr = (const char*)&k;
   int byteSum = 0;
@@ -52,6 +78,12 @@ HT_PFX int ClosedHashTable<Key, Val>::Hash(const Key& k) const {
   }
   return byteSum % M;
 }
+
+// =====================================================================================
+// Probe function for ClosedHashTable<T>
+//   - Notes
+//     \__ Implements the quadratic probing method as it has a 
+// =====================================================================================
 HT_PFX int ClosedHashTable<Key, Val>::Probe(int index) const {
   double a = 0.5;
   double b = 0.5;
@@ -59,6 +91,10 @@ HT_PFX int ClosedHashTable<Key, Val>::Probe(int index) const {
   
   return (int)(a * (index * index) + b * (index) + c);
 }
+
+// =====================================================================================
+// 
+// =====================================================================================
 HT_PFX Val ClosedHashTable<Key, Val>::Find(const Key& k) const {
   int hashed_index = Hash(k);
   if (buffer[hashed_index].key == k) {
