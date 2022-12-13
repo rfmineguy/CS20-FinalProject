@@ -4,11 +4,13 @@
 template <typename T>
 class Queue {
 public:
-  Queue();
-  virtual ~Queue();
+  Queue() {}
+  virtual ~Queue() {}
   virtual void Enqueue(const T& elem) = 0;
-  virtual T Dequeue() = 0;
-  virtual int Size() = 0;
+  virtual void Dequeue() = 0;
+  virtual T Front() const = 0;
+  virtual T Back() const = 0;
+  virtual int Size() const = 0;
 };
 
 #endif

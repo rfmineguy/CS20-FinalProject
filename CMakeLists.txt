@@ -1,5 +1,7 @@
 cmake_minimum_required (VERSION 3.11)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(CMAKE_CXX_FLAGS_DEBUG "-ggdb")
+set(CMAKE_CXX_FLAGS "-O3")
 
 # --- Fetch FTXUI --------------------------------------------------------------
 include(FetchContent)
@@ -22,7 +24,7 @@ project(homework05
   VERSION 1.0.0
 )
 
-add_executable(ftxtest src/main.cpp)
+add_executable(ftxtest src/main2.cpp src/PlayerPane.cpp)
 target_include_directories(ftxtest PRIVATE src)
 
 target_link_libraries(ftxtest

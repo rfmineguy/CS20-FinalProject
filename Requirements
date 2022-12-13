@@ -1,0 +1,35 @@
+1. Use the data structures & algorithms taught in this course for your program, unless given permission otherwise
+2. Document all code with comments, including class-level and function-level documentation
+	+ Incomplete
+		HashTable.hpp
+		ClosedHashTable.hpp
+		PlayerPane.hpp
+		Stack.hpp
+		DoublyLinkedStack.hpp
+		Queue.hpp
+		CircularQueue.hpp
+	+ Complete
+3. Be split across different files 
+	+ [DONE]
+4. Write at least 1,000 lines of code (not including comments or whitespace)
+	+ [TBA]
+5. Provide an asymptotic analysis for all functions
+	+ Incomplete
+		HashTable.hpp
+		ClosedHashTable.hpp
+		PlayerPane.hpp
+		Stack.hpp
+		DoublyLinkedStack.hpp
+		Queue.hpp
+		CircularQueue.hpp
+	+ Complete
+6. Use at least one ADT implementation meaningfully that's from a class assignment (lab or homework)
+	+ HashTable
+	+ Queue
+7. Create, implement, and use at least one ADT meaningfully that's not from a class assignment and different from the one you chose above
+	+ 
+8. Make at least one ADT implementation iterative and at least one ADT implementation recursive
+	+ [INCOMPLETE]
+	+ Make the stack recursive
+9. Use at least one search algorithm and one sorting algorithm meaningfully
+	+ [INCOMPLETE]
