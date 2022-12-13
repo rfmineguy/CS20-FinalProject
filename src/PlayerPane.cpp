@@ -1,4 +1,5 @@
 #include "../include/PlayerPane.hpp"
+#include <string.h>
 
 PlayerPane::PlayerPane(bool isTurn)
 :card_ht("tombstone", "empty"), card_selection(4), wins_losses([](GameResult a, GameResult b) { return a <= b; }), player_effects(), pressed(), isActiveTurn(isTurn), stats(10, 0, 5) {
@@ -176,6 +177,20 @@ void PlayerPane::PerformActions(PlayerPane& other_pane) {
         }
       }
     }
+  }
+}
+
+void PlayerPane::Reset() {
+  this->stats.armor = 0;
+  this->stats.health = 10;
+  this->stats.mana = 0;
+  player_effects.Clear();
+  wins_losses.Clear();
+  card_selection.Clear();
+
+  // Not sure how necessary this is
+  for (int i = 0; i < BUTTON_COUNT; i++) {
+    pressed[i] = false;
   }
 }
 

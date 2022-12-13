@@ -30,6 +30,7 @@ protected:
 public:
   SortedList(std::function<bool(T, T)>);
   ~SortedList();
+  void Clear();
   T At(int index) const;
   void Insert(int index, T elem);
   int Insert(T elem);
@@ -74,6 +75,10 @@ PFX SortedList<T>::SortedList(std::function<bool(T, T)> _sortRule)
 //   Clear memory used by the internal linked list
 // ================================================================
 PFX SortedList<T>::~SortedList() {
+  Clear();
+}
+
+PFX void SortedList<T>::Clear() {
   clearRec(header);
 }
 

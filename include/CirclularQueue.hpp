@@ -11,6 +11,7 @@ class CircularQueue : public Queue<T> {
 public:
   CircularQueue(int=10);
   ~CircularQueue();
+  void Clear();
   void Enqueue(const T&);
   void Dequeue();
   T Back() const;
@@ -36,6 +37,14 @@ PFX CircularQueue<T>::CircularQueue(int maxSize)
 PFX CircularQueue<T>::~CircularQueue() {
   delete[] buffer;
   buffer = nullptr;
+}
+
+PFX void CircularQueue<T>::Clear() {
+  backIndex = 0;
+  frontIndex = 0;
+  delete[] buffer;
+  buffer = nullptr;
+  buffer = new T[maxSize];
 }
 
 PFX void CircularQueue<T>::Enqueue(const T& elem) {

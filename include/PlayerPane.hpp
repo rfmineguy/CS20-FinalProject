@@ -78,6 +78,9 @@ public:
   bool IsDead() const;
   void ToggleTurn();
   void PerformActions(PlayerPane&);
+  
+public:
+  void Reset();
 
 // NOTE: Should these be public?
 public:
