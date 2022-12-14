@@ -69,6 +69,11 @@ PFX SortedList<T>::SortedList(std::function<bool(T, T)> _sortRule)
   header->next = trailer;
   middle = header;
   trailer->prev = header;
+  //sortRule => a <= b
+  header->val = INT_MAX * ((sortRule(1, 0) * 2) - 1); //[-INT_MAX, INT_MAX]
+  trailer->val = header->val * -1;
+  
+  std::cout << "Header=" << header->val << std::endl;
 }
 
 //================================================================
@@ -142,29 +147,30 @@ PFX void SortedList<T>::Insert(int index, T elem) {
 //    Analysis:
 //      
 // ================================================================
+// header <-> trailer
+// insert(4)
+//   header <-> 4 <-> trailer
+// insert(5)
+//   header <-> 4 <-> 5 <-> trailer
+// insert(1)
+//   header <-> 1 <-> 4 <-> 5 <-> trailer
 PFX int SortedList<T>::Insert(T elem) {
-  if (header->next == trailer) {
-    // insert the first element
-    Node* n = new Node(elem);
-    header->next = n;
-    n->prev = header;
-    n->next = trailer;
-    trailer->prev = n;
-    return 0;
-  }
-  if (header->next->val > elem) {
-    // insert at head
-    Node* n = new Node(elem);
-    Node* currNext = header->next;
-    header->next = n;
-    n->prev = header;
-    n->next = currNext;
-    currNext->prev = n;
-    return 1;
-  }
+  // if (Length() == 0) {
+  //       
+  // }
+  // if (header->next->val > elem) {
+  //   // insert at head
+  //   Node* n = new Node(elem);
+  //   Node* currNext = header->next;
+  //   header->next = n;
+  //   n->prev = header;
+  //   n->next = currNext;
+  //   currNext->prev = n;
+  //   return 1;
+  // }
   
   try {
-    return insertNormalRec(header->next, elem, 0);
+    return insertNormalRec(header, elem, 0);
   } catch (std::string& e) {
     std::cerr << e << std::endl;
   }
@@ -176,7 +182,7 @@ PFX int SortedList<T>::insertNormalRec(Node*& n, T elem, int current) {
     throw std::string("Failed to insert");
   }
   // else if (n->val < elem) {
-  else if (sortRule(n->val, elem)) {
+  else if (sortRule(n->val, elem) && !sortRule(n->next->val, elem)) {
     // insert elem after
     Node *newNode = new Node(elem);
     Node *next = n->next;
@@ -269,11 +275,13 @@ PFX int SortedList<T>::Length() const {
 template <typename C>
 std::ostream& operator<<(std::ostream& os, const SortedList<C>& sorted_list) {
   typename SortedList<C>::Node* curr = sorted_list.header->next;
-  std::cout << "Printing SortedList :" << curr << std::endl;
+  //std::cout << "Printing SortedList :" << curr << std::endl;
+  os << sorted_list.header->val << " -> ";
   while (curr != nullptr && curr != sorted_list.trailer) {
     os << curr->val << " <-> ";
     curr = curr->next;
   }
+  os << sorted_list.trailer->val << " <- ";
   os << std::endl;
   return os;
 }

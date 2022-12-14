@@ -3,7 +3,6 @@
 
 PlayerPane::PlayerPane(bool isTurn)
 :card_ht("tombstone", "empty"), card_selection(4), wins_losses([](GameResult a, GameResult b) { return a <= b; }), player_effects(), pressed(), isActiveTurn(isTurn), stats(10, 0, 5) {
-  auto func = [](int a, int b) { return a <= b; };
   cardTypes[0] = "Poison";
   cardTypes[1] = "Health";
   cardTypes[2] = "Shield";
@@ -17,6 +16,11 @@ PlayerPane::PlayerPane(bool isTurn)
   
   // randomize the cards that start in your deck
   RandomizeCardsInInventory();
+  
+  wins_losses.Insert(GameResult::WIN);
+  wins_losses.Insert(GameResult::WIN);
+  wins_losses.Insert(GameResult::WIN);
+  wins_losses.Insert(GameResult::LOSS);
   
   // callback that decides what happens when a card is pressed
   card_select_callback = [&](int index) {

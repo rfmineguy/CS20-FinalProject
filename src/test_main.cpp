@@ -91,9 +91,17 @@ int main() {
   // The rule being <= or >= is important, otherwise you can't store duplicates
   SortedList<int> list([](int a, int b) { return a <= b; });
   list.Insert(4);
+  std::cout << list;
   list.Insert(7);
+  std::cout << list;
   list.Insert(3);
+  std::cout << list;
+  list.Insert(8);
+  std::cout << list;
+  list.Insert(3);
+  std::cout << list;
   list.Insert(1);
+  std::cout << list;
   list.Insert(1);
   std::cout << list;
 }
