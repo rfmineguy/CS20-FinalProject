@@ -45,9 +45,11 @@ struct PlayerStats {
 };
 
 // NOTE: Having this as enum class didn't work, but normal enum does
-enum GameResult : int {
-  WIN, LOSS
+enum class GameResult : int {
+  LOWEST = -999999, WIN = 5, LOSS = 6, HIGHEST = 999999
 };
+
+std::ostream& operator<<(std::ostream& os, const GameResult& gr);
 
 // =====================
 #define CARD_TYPE_AMOUNT 4
@@ -85,6 +87,7 @@ public:
   // returns a mutable reference
   CircularQueue<std::string>& GetCardSelectionQueue();
   DoubleLinkedStack<std::shared_ptr<PlayerEffect>>& GetPlayerEffectsStack();
+  SortedList<GameResult>& GetWinsLossesList();
   const ClosedHashTable<std::string, CardInfo>& GetCardInfoHT();
 
 private:

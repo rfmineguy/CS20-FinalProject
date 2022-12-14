@@ -1,8 +1,19 @@
 #include "../include/PlayerPane.hpp"
 #include <string.h>
 
+std::ostream& operator<<(std::ostream& os, const GameResult& gr) {
+  switch (gr) {
+  case GameResult::LOWEST: os << "Lowest (N/A)"; break;
+  case GameResult::WIN: os << "Win"; break;
+  case GameResult::LOSS: os << "Loss"; break;
+  case GameResult::HIGHEST: os << "Highest"; break;
+  default: os << "Unimplemented"; break;
+  }
+  return os;
+}
+
 PlayerPane::PlayerPane(bool isTurn)
-:card_ht("tombstone", "empty"), card_selection(4), wins_losses([](GameResult a, GameResult b) { return a <= b; }), player_effects(), pressed(), isActiveTurn(isTurn), stats(10, 0, 5) {
+:card_ht("tombstone", "empty"), card_selection(4), wins_losses([](GameResult a, GameResult b) { return a <= b; }, GameResult::LOWEST, GameResult::HIGHEST), player_effects(), pressed(), isActiveTurn(isTurn), stats(10, 0, 5) {
   cardTypes[0] = "Poison";
   cardTypes[1] = "Health";
   cardTypes[2] = "Shield";
@@ -17,10 +28,10 @@ PlayerPane::PlayerPane(bool isTurn)
   // randomize the cards that start in your deck
   RandomizeCardsInInventory();
   
-  wins_losses.Insert(GameResult::WIN);
-  wins_losses.Insert(GameResult::WIN);
-  wins_losses.Insert(GameResult::WIN);
-  wins_losses.Insert(GameResult::LOSS);
+  // wins_losses.Insert(GameResult::WIN);
+  // wins_losses.Insert(GameResult::WIN);
+  // wins_losses.Insert(GameResult::LOSS);
+  // wins_losses.Insert(GameResult::WIN);
   
   // callback that decides what happens when a card is pressed
   card_select_callback = [&](int index) {
@@ -130,12 +141,13 @@ Component PlayerPane::MakeWinsLossesSortedList() {
   return Renderer([&] {
     std::vector<Element> elements;
     for (int i = 0; i < wins_losses.Length(); i++) {
-      std::string s = wins_losses.At(i) == WIN ? "Win" : "Loss";
+      std::string s = wins_losses.At(i) == GameResult::WIN ? "Win  " : "Loss  ";
+      std::cerr << s << std::endl;
       elements.push_back(hbox({text(s) | bold}));
     }
     return hbox({
-      text("Wins/Losses"),
-      vbox({
+      text("Wins/Losses : "),
+      hbox({
         elements
       })
     });
@@ -184,6 +196,13 @@ void PlayerPane::PerformActions(PlayerPane& other_pane) {
       }
     }
   }
+  
+  if (IsDead()) {
+    other_pane.GetWinsLossesList().Insert(GameResult::WIN);
+    wins_losses.Insert(GameResult::LOSS);
+    Reset();
+    other_pane.Reset();
+  }
 }
 
 void PlayerPane::Reset() {
@@ -191,7 +210,7 @@ void PlayerPane::Reset() {
   this->stats.health = 10;
   this->stats.mana = 0;
   player_effects.Clear();
-  wins_losses.Clear();
+  // wins_losses.Clear();
   card_selection.Clear();
 
   // Not sure how necessary this is
@@ -206,6 +225,10 @@ CircularQueue<std::string>& PlayerPane::GetCardSelectionQueue() {
 
 DoubleLinkedStack<std::shared_ptr<PlayerEffect>>& PlayerPane::GetPlayerEffectsStack() {
   return this->player_effects;
+}
+
+SortedList<GameResult>& PlayerPane::GetWinsLossesList() {
+  return this->wins_losses;
 }
 
 const ClosedHashTable<std::string, CardInfo>& PlayerPane::GetCardInfoHT() {

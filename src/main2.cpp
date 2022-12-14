@@ -63,14 +63,7 @@ int main() {
       //   These have conditions for whether they should actually happen, so calling both here is OK
       pane1.PerformActions(pane2);
       pane2.PerformActions(pane1);
-      
-      if (pane1.IsDead()) {
-        // deal with the wins/losses sorted list
-      }
-      if (pane2.IsDead()) {
-        // deal with the wins/losses sorted list
-      }
-      
+            
       screen.PostEvent(Event::Custom);
     })
   }) | border;

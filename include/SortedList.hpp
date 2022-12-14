@@ -28,7 +28,7 @@ protected:
   };
 
 public:
-  SortedList(std::function<bool(T, T)>);
+  SortedList(std::function<bool(T, T)>, T, T);
   ~SortedList();
   void Clear();
   T At(int index) const;
@@ -64,16 +64,20 @@ private:
 //   Setup the initial memory for the header and trailer nodes
 //   Additionally a sort rule lambda is required to do the sort
 //================================================================
-PFX SortedList<T>::SortedList(std::function<bool(T, T)> _sortRule)
+PFX SortedList<T>::SortedList(std::function<bool(T, T)> _sortRule, T lowest, T highest)
 :sortRule(_sortRule), header(new Node()), trailer(new Node()), length(0) {
   header->next = trailer;
   middle = header;
   trailer->prev = header;
   //sortRule => a <= b
-  header->val = INT_MAX * ((sortRule(1, 0) * 2) - 1); //[-INT_MAX, INT_MAX]
-  trailer->val = header->val * -1;
-  
-  std::cout << "Header=" << header->val << std::endl;
+  if (sortRule(lowest, highest)) {
+    header->val = lowest;
+    trailer->val = highest;
+  }
+  else {
+    header->val = highest;
+    trailer->val = lowest;
+  }
 }
 
 //================================================================
@@ -85,6 +89,7 @@ PFX SortedList<T>::~SortedList() {
 
 PFX void SortedList<T>::Clear() {
   clearRec(header);
+  length = 0;
 }
 
 PFX void SortedList<T>::clearRec(Node* n) {
@@ -190,6 +195,7 @@ PFX int SortedList<T>::insertNormalRec(Node*& n, T elem, int current) {
     newNode->prev = n;
     newNode->next = next;
     next->prev = newNode;
+    length++;
     return current;
   }
   else {
