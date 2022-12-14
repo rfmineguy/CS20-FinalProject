@@ -276,12 +276,15 @@ template <typename C>
 std::ostream& operator<<(std::ostream& os, const SortedList<C>& sorted_list) {
   typename SortedList<C>::Node* curr = sorted_list.header->next;
   //std::cout << "Printing SortedList :" << curr << std::endl;
-  os << sorted_list.header->val << " -> ";
+  os << "header -> ";
   while (curr != nullptr && curr != sorted_list.trailer) {
-    os << curr->val << " <-> ";
+    os << curr->val;
+    if (curr->next != sorted_list.trailer) {
+      os << " <-> ";
+    }
     curr = curr->next;
   }
-  os << sorted_list.trailer->val << " <- ";
+  os << " <- trailer";
   os << std::endl;
   return os;
 }
