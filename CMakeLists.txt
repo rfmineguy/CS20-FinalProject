@@ -24,10 +24,10 @@ project(homework05
   VERSION 1.0.0
 )
 
-add_executable(ftxtest src/main2.cpp src/PlayerPane.cpp)
-target_include_directories(ftxtest PRIVATE src)
+add_executable(card_battle src/main2.cpp src/PlayerPane.cpp)
+target_include_directories(card_battle PRIVATE src)
 
-target_link_libraries(ftxtest
+target_link_libraries(card_battle
   PRIVATE ftxui::screen
   PRIVATE ftxui::dom
   PRIVATE ftxui::component
