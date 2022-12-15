@@ -23,11 +23,11 @@ int main() {
   auto pane1_wins_losses_sorted_list = pane1.MakeWinsLossesSortedList();
   auto pane1_renderer = Renderer(Container::Vertical({pane1_card_grid}), [&] {
     return vbox({
-      pane1_stats->Render() | border,
-      pane1_effects->Render() | border,
-      pane1_card_queue->Render() | border,
-      pane1_card_grid->Render() | border,
-      pane1_wins_losses_sorted_list->Render() | border,
+      pane1_stats->Render() | borderRounded,
+      pane1_effects->Render() | borderRounded,
+      pane1_card_queue->Render() | borderRounded,
+      pane1_card_grid->Render() | borderRounded,
+      pane1_wins_losses_sorted_list->Render() | borderRounded,
     });
   });
   
@@ -63,7 +63,8 @@ int main() {
       //   These have conditions for whether they should actually happen, so calling both here is OK
       pane1.PerformActions(pane2);
       pane2.PerformActions(pane1);
-            
+      
+      // Attempt to refresh the FTXUI screen when the turn is ended
       screen.PostEvent(Event::Custom);
     })
   }) | border;

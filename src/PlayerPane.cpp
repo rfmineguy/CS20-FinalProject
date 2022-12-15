@@ -78,22 +78,31 @@ Component PlayerPane::MakeEffectsContainer() {
         player_effects.Push(effect);
       }
       return hbox({
-        text("Effects: "),
+        text("[Effects]  ") | color(Color::Cyan),
         vbox({effectVec})
       });
     })
-  
   });
 }
 
 Component PlayerPane::MakeStatsContainer() {
   return Container::Horizontal({
     Renderer([&]{
-      std::stringstream ss;
-      ss << "Stats ||| Health ♥ " << stats.health << " | Armor Θ "<< stats.armor << " | Mana ┼ " << stats.mana;
+      // Data for turn indicator
+      Color turnIndicatorColor = isActiveTurn ? Color::Green : Color::Red;;
+      std::string turnIndicatorString = isActiveTurn ? "It is your turn" : "It is not your turn";
+      // Data for stats
+      Element s = hbox({
+        text("[Stats]  ") | color(Color::Cyan),
+        text("Health ♥ " + std::to_string(stats.health) + " ") | color(Color::Pink1),
+        text("Armor Θ " + std::to_string(stats.armor) + " ") | color(Color::Yellow),
+        text("Mana ┼ " + std::to_string(stats.mana) + " ") | color(Color::Aquamarine1)
+      });
+    
       return vbox({
-        text(isActiveTurn ? "It is your turn" : "It is not your turn"),
-        text(ss.str()),
+        text(turnIndicatorString) | color(turnIndicatorColor),
+        separator(),
+        s
       });
     })
   });
@@ -129,7 +138,7 @@ Component PlayerPane::MakeCardQueue() {
       card_selection.Enqueue(s);
     }
     return hbox({
-      text("Queued Cards: "),
+      text("[Queued Cards] ") | color(Color::Cyan),
       vbox({
         queue
       }),
@@ -146,7 +155,7 @@ Component PlayerPane::MakeWinsLossesSortedList() {
       elements.push_back(hbox({text(s) | bold}));
     }
     return hbox({
-      text("Wins/Losses : "),
+      text("[Wins/Losses] ") | color(Color::Cyan),
       hbox({
         elements
       })
@@ -191,8 +200,30 @@ void PlayerPane::PerformActions(PlayerPane& other_pane) {
           player_effects.Push(heffect);
         }
         if (seffect != nullptr) {
-          player_effects.Push(seffect);
+          other_pane.GetPlayerEffectsStack().Push(seffect);
         }
+      }
+    }
+    
+    std::shared_ptr<PlayerEffect> e = GetPlayerEffectsStack().Peek();
+    GetPlayerEffectsStack().Pop();
+
+    std::shared_ptr<PoisonEffect> peffect = std::dynamic_pointer_cast<PoisonEffect>(e);
+    std::shared_ptr<HealingEffect> heffect = std::dynamic_pointer_cast<HealingEffect>(e);
+    std::shared_ptr<ShieldEffect> seffect = std::dynamic_pointer_cast<ShieldEffect>(e);
+    if (peffect != nullptr) {
+      stats.health -= peffect->GetPoisonDamage();
+    }
+    if (heffect != nullptr) {
+      stats.health += heffect->GetHealAmount();
+      if (stats.health >= 10) {
+        stats.health = 10;
+      }
+    }
+    if (seffect != nullptr) {
+      stats.armor += seffect->GetShieldAmount();
+      if (stats.armor >= 10) {
+        stats.armor = 10;
       }
     }
   }
@@ -210,7 +241,7 @@ void PlayerPane::Reset() {
   this->stats.health = 10;
   this->stats.mana = 0;
   player_effects.Clear();
-  // wins_losses.Clear();
+  // wins_losses.Clear(); // why clear the wins_losses list?
   card_selection.Clear();
 
   // Not sure how necessary this is
