@@ -32,7 +32,11 @@
 *.app
 
 # Folders
+build/
 ./build/
+.cache/
 ./cache/
+.test_main
 ./test_main
+.test_main.dSYM/
 ./test_main.dSYM/
