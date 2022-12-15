@@ -1,14 +1,15 @@
 1. Use the data structures & algorithms taught in this course for your program, unless given permission otherwise
 2. Document all code with comments, including class-level and function-level documentation
 	+ Incomplete
+		PlayerPane.hpp
+	+ Complete
+		SortedList.hpp
 		HashTable.hpp
 		ClosedHashTable.hpp
-		PlayerPane.hpp
-		Stack.hpp
 		DoublyLinkedStack.hpp
+		Stack.hpp
 		Queue.hpp
 		CircularQueue.hpp
-	+ Complete
 3. Be split across different files 
 	+ [DONE]
 4. Write at least 1,000 lines of code (not including comments or whitespace)
@@ -17,6 +18,7 @@
 5. Provide an asymptotic analysis for all functions
 	+ Incomplete
 		PlayerPane.hpp
+		SortedList.hpp
 	+ Complete
 		Stack.hpp (Nothing to analyze)
 		DoublyLinkedStack.hpp

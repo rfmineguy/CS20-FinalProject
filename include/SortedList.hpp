@@ -12,8 +12,6 @@
 #include <iostream>
 
 // Note this class won't work properly if your ADT doesn't have a operator<< or an operator<
-
-
 template <typename T>
 class SortedList : public List<T> {
 protected:
@@ -60,10 +58,13 @@ private:
 //   DO THIS RECURSIVELY
 //================================================================
 
-//================================================================
-//   Setup the initial memory for the header and trailer nodes
-//   Additionally a sort rule lambda is required to do the sort
-//================================================================
+// =====================================================================================
+// Constructor for SortedList<T>
+//   - Notes
+//   - Analysis
+//     \__ O(1) We're only allocating memory and initializing the member variables, and setting up
+//                 weird things relating to the sort rule
+// =====================================================================================
 PFX SortedList<T>::SortedList(std::function<bool(T, T)> _sortRule, T lowest, T highest)
 :sortRule(_sortRule), header(new Node()), trailer(new Node()), length(0) {
   header->next = trailer;
@@ -80,42 +81,61 @@ PFX SortedList<T>::SortedList(std::function<bool(T, T)> _sortRule, T lowest, T h
   }
 }
 
-//================================================================
-//   Clear memory used by the internal linked list
-// ================================================================
+// =====================================================================================
+// Destructor for SortedList<T>
+//   - Notes
+//   - Analysis
+//     \__ O(Clear) Since Clear is the only thing in this the analysis for it is the same
+// =====================================================================================
 PFX SortedList<T>::~SortedList() {
   Clear();
 }
 
+// =====================================================================================
+// Clear function for SortedList<T>
+//   - Notes
+//   - Analysis
+//     \__ O(clearRec) Since clearRec is the only thing in this the analysis for it is the same
+// =====================================================================================
 PFX void SortedList<T>::Clear() {
   clearRec(header);
   length = 0;
 }
 
+// =====================================================================================
+// clearRec function for SortedList<T>
+//   - Notes
+//     \__ Recursive
+//   - Analysis
+//     \__ O(n) Has to recursively visit each node in the internal linked list
+// =====================================================================================
 PFX void SortedList<T>::clearRec(Node* n) {
   if (n == nullptr) {
     return;
   }
   clearRec(n->next);
   delete n;
-  // while (n != nullptr) {
-  //   Node* next = n->next;
-  //   delete n;
-  //   n = nullptr;
-  //   n = next;
-  // }
 }
 
-// ================================================================
-//    Supply a non recursive interface for the recursive .At(int) function
-// ================================================================
+// =====================================================================================
+// At(int) function for SortedList<T>
+//   - Notes
+//     \__ Non recursive interface for the recursive version
+//   - Analysis
+//     \__ O(atRec)
+// =====================================================================================
 PFX T SortedList<T>::At(int index) const {
   return atRec(header->next, index, 0);
 }
 
-// ================================================================
-//    Recursive function to find the value at the particular index
-// ================================================================
+// =====================================================================================
+// atRec(Node*, int, int) function for SortedList<T>
+//   - Notes
+//     \__ Recursively find the target node
+//   - Analysis
+//     \__ O(n) when the value is not present
+//     \__ O(n) as well when the value is found (though each node may not need to be visited) 
+// =====================================================================================
 PFX T SortedList<T>::atRec(Node* n, int targetIndex, int currentIndex) const {
   if (n == nullptr) {
     throw std::string("Value not in list");
@@ -126,6 +146,14 @@ PFX T SortedList<T>::atRec(Node* n, int targetIndex, int currentIndex) const {
   return atRec(n->next, targetIndex, currentIndex + 1);
 }
 
+// =====================================================================================
+// atRecNode(Node*, int, int) function for SortedList<T>
+//   - Notes
+//     \__ Recursively find the target node
+//   - Analysis
+//     \__ O(n) when the value is not present
+//     \__ O(n) as well when the value is found (though each node may not need to be visited) 
+// =====================================================================================
 PFX typename SortedList<T>::Node* SortedList<T>::atRecNode(Node* n, int targetIndex, int currentIndex) const {
   if (n == nullptr) {
     throw std::string("Value not in list");
@@ -136,44 +164,26 @@ PFX typename SortedList<T>::Node* SortedList<T>::atRecNode(Node* n, int targetIn
   return atRecNode(n->next, targetIndex, currentIndex + 1);
 }
 
-// ================================================================
-//    This function is just to make the normal insert function of List<T> not accessable
-// ================================================================
+
+// =====================================================================================
+// Insert(int index, T elem) function for SortedList<T>
+//   - Notes
+//     \__ Insert in this form is unsupported for a sorted list
+// =====================================================================================
 PFX void SortedList<T>::Insert(int index, T elem) {
   std::stringstream ss;
   ss << "Insert(" << index << ", " << elem << ") is undefined for sorted lists";
   throw ss.str();
 }
 
-// ================================================================
-//    Non recursive function to insert the value specified, its position depends on the sorting condition specified
-//      Public interface
-//      Returns the index where it resides
-//    Analysis:
-//      
-// ================================================================
-// header <-> trailer
-// insert(4)
-//   header <-> 4 <-> trailer
-// insert(5)
-//   header <-> 4 <-> 5 <-> trailer
-// insert(1)
-//   header <-> 1 <-> 4 <-> 5 <-> trailer
+// =====================================================================================
+// Insert(T elem) function for SortedList<T>
+//   - Notes
+//     \__ Insert the value 'elem' sorted
+//   - Analysis
+//     \__ O(insertNormalRec)
+// =====================================================================================
 PFX int SortedList<T>::Insert(T elem) {
-  // if (Length() == 0) {
-  //       
-  // }
-  // if (header->next->val > elem) {
-  //   // insert at head
-  //   Node* n = new Node(elem);
-  //   Node* currNext = header->next;
-  //   header->next = n;
-  //   n->prev = header;
-  //   n->next = currNext;
-  //   currNext->prev = n;
-  //   return 1;
-  // }
-  
   try {
     return insertNormalRec(header, elem, 0);
   } catch (std::string& e) {
@@ -182,11 +192,18 @@ PFX int SortedList<T>::Insert(T elem) {
   return -1;
 }
 
+// =====================================================================================
+// insertNormalRec(Node*&, T elem, int current) function for SortedList<T>
+//   - Notes
+//     \__ Insert the value 'elem' sorted, and return where it was inserted
+//   - Analysis
+//     \__ O(1) When the header is the trailer (MAY BE REDUNDANT)
+//     \__ O(n) In all other cases
+// =====================================================================================
 PFX int SortedList<T>::insertNormalRec(Node*& n, T elem, int current) {
   if (n == trailer) {
     throw std::string("Failed to insert");
   }
-  // else if (n->val < elem) {
   else if (sortRule(n->val, elem) && !sortRule(n->next->val, elem)) {
     // insert elem after
     Node *newNode = new Node(elem);
@@ -203,81 +220,46 @@ PFX int SortedList<T>::insertNormalRec(Node*& n, T elem, int current) {
   }
 }
 
-// ================================================================
-//    Recursive function to find the value at the particular index
-//      Private interface
-//      Depending on whether the element should go on the right or left 'n' will start at a different place
-//    NOTE: 
-//      Figure out how to incorporate the sort function into this logically
-//    Analysis:
-//      
-// ================================================================
-// UNTESTED:
-PFX int SortedList<T>::insertRecLeft(Node*& n, T elem, int current) {
-  if (n->val < elem && n->next->val >= elem) {
-    std::cout << n->val << ", " << n->next->val << std::endl;
-    // insert
-    Node* new_node = new Node(elem);
-    Node* next = n->next;
-    n->next = new_node;
-    new_node->next = next;
-    new_node->prev = n;
-    next->prev = new_node;
-    length++;
-    return current;
-  }
-  else {
-    return insertRecLeft(n->next, elem, current + 1);
-  }
-  // recursively insert 'elem' at position 'target'
-}
-
-// UNTESTED:
-PFX int SortedList<T>::insertRecRight(Node*& n, T elem, int current) {
-  if (elem > n->prev->val && elem < n->val) {
-    std::cout << n->prev->val << ", " << n->val << std::endl;
-    Node* newNode = new Node(elem);
-    Node* prev = n->prev;
-    
-    n->prev = newNode;
-    newNode->prev = prev;
-    newNode->next = n->next;
-    prev->next = newNode;
-    length++;
-    return current;
-    //insert
-  }
-  else {
-    return insertRecRight(n->prev, elem, current);
-  }
-  return 0;
-}
-
-// ================================================================
-//    Replace is not a supported feature of a SortedList
-// ================================================================
+// =====================================================================================
+// Replace(int index, T elem) function for SortedList<T>
+//   - Notes
+//     \__ Replace in this form is unsupported for a sorted list
+// =====================================================================================
 PFX void SortedList<T>::Replace(int index, T elem) {
   std::stringstream ss;
   ss << "Replace(" << index << ", " << elem << ") is undefined for sorted lists";
   throw ss.str();
 }
 
-// ================================================================
-//    Remove is not a supported feature of a SortedList
-// ================================================================
+// =====================================================================================
+// Remove(int index) function for SortedList<T>
+//   - Notes
+//     \__ Replace in this form is unsupported for a sorted list
+// =====================================================================================
 PFX void SortedList<T>::Remove(int index) {
   std::stringstream ss;
   ss << "Remove(" << index << ") is undefined for sorted lists";
   throw ss.str();
 }
 
-// ================================================================
-//    Retrieve the total number of elements in this sorted list
-// ================================================================
+// =====================================================================================
+// Length(void) function for SortedList<T>
+//   - Notes
+//     \__ Returns the logical length of the sorted list
+//   - Analysis
+//     \__ O(1)
+// =====================================================================================
 PFX int SortedList<T>::Length() const {
   return this->length;
 }
 
+// =====================================================================================
+// ostream operator for SortedList<T>
+//   - Notes
+//     \__ Provides a way for std::ostream to display this class to standard out
+//   - Analysis
+//     \__ O(n) Loops over the whole list
+// =====================================================================================
 template <typename C>
 std::ostream& operator<<(std::ostream& os, const SortedList<C>& sorted_list) {
   typename SortedList<C>::Node* curr = sorted_list.header->next;
