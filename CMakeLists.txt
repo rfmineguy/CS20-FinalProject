@@ -24,7 +24,7 @@ project(homework05
   VERSION 1.0.0
 )
 
-add_executable(card_battle src/main2.cpp src/PlayerPane.cpp)
+add_executable(card_battle src/main2.cpp src/PlayerPane.cpp src/RandomUtil.cpp)
 target_include_directories(card_battle PRIVATE src)
 
 target_link_libraries(card_battle
