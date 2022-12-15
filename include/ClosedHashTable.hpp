@@ -30,6 +30,15 @@ private:
   typename HashTable<Key, Val>::Record* buffer;
 };
 
+// Template
+// =====================================================================================
+// Name
+//   - Notes
+//   - Analysis
+//
+// =====================================================================================
+
+
 // =====================================================================================
 //  Implementation details for ClosedHashTable<T> below
 // =====================================================================================
@@ -83,17 +92,25 @@ HT_PFX int ClosedHashTable<Key, Val>::Hash(const Key& k) const {
 // Probe function for ClosedHashTable<T>
 //   - Notes
 //     \__ Implements the quadratic probing method as it has a 
+//   - Analysis
+//     \__ O(1) It's a simple math equation
 // =====================================================================================
 HT_PFX int ClosedHashTable<Key, Val>::Probe(int index) const {
+  // These are just to make what's going clearer
   double a = 0.5;
   double b = 0.5;
   double c = 0;
   
+  // Formula => P(i) = a*(i^2) + b*i + c
   return (int)(a * (index * index) + b * (index) + c);
 }
 
 // =====================================================================================
-// 
+// Find function for ClosedHashTable<T>
+//   - Notes
+//   - Analysis
+//     \_ O(1) When the first hashed location has the key
+//     \_ O(M) When the first hashed location isn't the key we are looking for
 // =====================================================================================
 HT_PFX Val ClosedHashTable<Key, Val>::Find(const Key& k) const {
   int hashed_index = Hash(k);
@@ -110,10 +127,18 @@ HT_PFX Val ClosedHashTable<Key, Val>::Find(const Key& k) const {
   }
   throw std::string("Could not find key");
 }
+
+// =====================================================================================
+// Name
+//   - Notes
+//   - Analysis
+//     \_ O(1) When the first hash location has no valid value
+//     \_ O(M) When the first hash location is taken
+// =====================================================================================
 HT_PFX void ClosedHashTable<Key,Val>::Insert(const Key& k, const Val& v) {
   int hashed_index = Hash(k);
   bool status = false;
-  if (buffer[hashed_index].key == EMPTY) {
+  if (buffer[hashed_index].key == EMPTY || buffer[hashed_index].key == TOMBSTONE) {
     buffer[hashed_index] = typename ClosedHashTable<Key, Val>::Record(k, v);
     status = true;
   }
@@ -134,6 +159,14 @@ HT_PFX void ClosedHashTable<Key,Val>::Insert(const Key& k, const Val& v) {
     throw ss.str();
   }
 }
+
+// =====================================================================================
+// Name
+//   - Notes
+//   - Analysis
+//     \_ O(1) When the first hash location is the record
+//     \_ O(M) When we have to probe to the next location, and when there is no such entry
+// =====================================================================================
 HT_PFX void ClosedHashTable<Key, Val>::Remove(const Key& k) {
   int hashed_index = Hash(k);
   if (buffer[hashed_index].key == k) {
@@ -152,10 +185,24 @@ HT_PFX void ClosedHashTable<Key, Val>::Remove(const Key& k) {
     }
   }
 }
+
+// =====================================================================================
+// Name
+//   - Notes
+//   - Analysis O(1)
+//     \_ Simply return a variable's value
+// =====================================================================================
 HT_PFX int ClosedHashTable<Key, Val>::Size() {
   return size;
 }
 
+// =====================================================================================
+// ostream operator
+//   - Notes
+//     \_ N/A
+//   - Analysis O(M)
+//     \_ Always loops over every element
+// =====================================================================================
 template <typename CKey, typename CVal>
 std::ostream& operator<<(std::ostream& os, const ClosedHashTable<CKey, CVal>& closedHT) {
   for (int i = 0; i < closedHT.M; i++) {
