@@ -39,21 +39,47 @@ private:
   Node* tail;
 };
 
-/*
- IMPLEMENTATION
-*/
+// Template
+// =====================================================================================
+// Name
+//   - Notes
+//   - Analysis
+//
+// =====================================================================================
+
+// =====================================================================================
+// Constructor for DoubleLinkedStack
+//   - Notes
+//   - Analysis (1)
+// =====================================================================================
 PFX DoubleLinkedStack<T>::DoubleLinkedStack()
 :head(nullptr), tail(nullptr) { }
 
+// =====================================================================================
+// Destructor for DoubleLinkedStack
+//   - Notes
+//   - Analysis (1)
+// =====================================================================================
 PFX DoubleLinkedStack<T>::~DoubleLinkedStack() {
   Clear();
 }
 
+// =====================================================================================
+// Copy Constructor for DoubleLinkedStack
+//   - Notes
+//   - Analysis O(Clear) + O(copy)
+// =====================================================================================
 PFX DoubleLinkedStack<T>::DoubleLinkedStack(const DoubleLinkedStack<T>& stack) {
   Clear();
   copy(stack);
 }
 
+// =====================================================================================
+// Assign operator for DoubleLinkedStack
+//   - Notes
+//   - Analysis:
+//     \__ O(Clear) + O(copy) when not self assign
+// =====================================================================================
 PFX DoubleLinkedStack<T> DoubleLinkedStack<T>::operator=(const DoubleLinkedStack<T>& stack) {
   if (this != &stack) {
     Clear();
@@ -61,10 +87,22 @@ PFX DoubleLinkedStack<T> DoubleLinkedStack<T>::operator=(const DoubleLinkedStack
   }
 }
 
+// =====================================================================================
+// Clear function for DoubleLinkedStack
+//   - Notes
+//   - Analysis (1)
+// =====================================================================================
 PFX void DoubleLinkedStack<T>::Clear() {
   
 }
 
+// =====================================================================================
+// copy function for DoubleLinkedStack
+//   - Notes
+//   - Analysis
+//     \__ O(1) When the stack is empty
+//     \__ O(n) When the incoming stack is not empty
+// =====================================================================================
 PFX void DoubleLinkedStack<T>::copy(const DoubleLinkedStack& stack) {
   std::cout << "Copying stack" << std::endl;
   if (stack.head == nullptr) {
@@ -84,6 +122,12 @@ PFX void DoubleLinkedStack<T>::copy(const DoubleLinkedStack& stack) {
   std::cout << "Copied stack" << std::endl;
 }
 
+// =====================================================================================
+// Push function for DoubleLinkedStack
+//   - Notes
+//   - Analysis
+//     \__ O(1) When the stack is empty and not empty
+// =====================================================================================
 PFX void DoubleLinkedStack<T>::Push(const T& value) {
   Node* n = new Node(value);
   if (head == nullptr) {
@@ -101,6 +145,12 @@ PFX void DoubleLinkedStack<T>::Push(const T& value) {
   this->m_Size ++;
 }
 
+// =====================================================================================
+// Pop function for DoubleLinkedStack
+//   - Notes
+//   - Analysis
+//     \__ O(1) When the stack is empty and not empty
+// =====================================================================================
 PFX void DoubleLinkedStack<T>::Pop() {
   if (head == nullptr) {
     throw std::string("Empty");
@@ -120,6 +170,12 @@ PFX void DoubleLinkedStack<T>::Pop() {
   this->m_Size --;
 }
 
+// =====================================================================================
+// Peek function for DoubleLinkedStack
+//   - Notes
+//   - Analysis
+//     \__ O(1) When the stack is empty and not empty
+// =====================================================================================
 PFX T DoubleLinkedStack<T>::Peek() {
   if (Size() == 0) {
     throw std::string("Peek fail. No elements in stack.");
@@ -127,10 +183,22 @@ PFX T DoubleLinkedStack<T>::Peek() {
   return tail->value;
 }
 
+// =====================================================================================
+// Size function for DoubleLinkedStack
+//   - Notes
+//   - Analysis
+//     \__ O(1)
+// =====================================================================================
 PFX int DoubleLinkedStack<T>::Size() const {
   return this->m_Size;
 }
- 
+
+// =====================================================================================
+// ostream operator for DoubleLinkedStack
+//   - Notes
+//   - Analysis
+//     \__ O(n) in all cases
+// =====================================================================================
 template <typename C>
 std::ostream& operator<<(std::ostream& os, const DoubleLinkedStack<C>& stack) {
   typename DoubleLinkedStack<C>::Node* n = stack.head;
