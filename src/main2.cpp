@@ -9,8 +9,10 @@ int main() {
   //============================================================================
   // Create two panes
   //============================================================================
+  srand(time(nullptr));
   int turn = rand() % 2;
   PlayerPane pane1(turn);      // param determines weather this player starts
+  srand(time(nullptr));
   PlayerPane pane2(!turn);
   
   //============================================================================
