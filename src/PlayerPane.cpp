@@ -15,7 +15,7 @@ std::ostream& operator<<(std::ostream& os, const GameResult& gr) {
 }
 
 PlayerPane::PlayerPane(bool isTurn)
-:card_ht("tombstone", "empty"), card_selection(4), wins_losses([](GameResult a, GameResult b) { return a <= b; }, GameResult::LOWEST, GameResult::HIGHEST), player_effects(), pressed(), isActiveTurn(isTurn), stats(10, 0, 5), rd(), dist(0, 5) {
+:card_ht("tombstone", "empty"), card_selection(4), wins_losses([](GameResult a, GameResult b) { return a <= b; }, GameResult::LOWEST, GameResult::HIGHEST), player_effects(), pressed(), isActiveTurn(isTurn), stats(10, 0, 5) {
   cardTypes[0] = "Poison";
   cardTypes[1] = "Health";
   cardTypes[2] = "Shield";
