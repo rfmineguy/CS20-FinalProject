@@ -101,10 +101,6 @@ private:
   PlayerStats stats;
   bool pressed[BUTTON_COUNT];
   bool isActiveTurn;
-  
-private:
-  std::random_device rd;
-  std::uniform_int_distribution<int> dist;
 };
 
 #endif
