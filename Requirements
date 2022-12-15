@@ -16,14 +16,14 @@
 		- make cloc
 5. Provide an asymptotic analysis for all functions
 	+ Incomplete
-		HashTable.hpp
-		ClosedHashTable.hpp
 		PlayerPane.hpp
-		Stack.hpp
-		DoublyLinkedStack.hpp
-		Queue.hpp
-		CircularQueue.hpp
 	+ Complete
+		Stack.hpp (Nothing to analyze)
+		DoublyLinkedStack.hpp
+		HashTable.hpp (Nothing to analyze)
+		ClosedHashTable.hpp
+		Queue.hpp (Nothing to analyze)
+		CircularQueue.hpp
 6. Use at least one ADT implementation meaningfully that's from a class assignment (lab or homework)
 	+ HashTable
 	+ Queue
