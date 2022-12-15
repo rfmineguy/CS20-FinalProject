@@ -14,6 +14,8 @@
 #include "../include/SortedList.hpp"
 #include "../include/effects/Effects.hpp"
 
+#include <random>
+
 using namespace ftxui;
 
 //============================================================================
@@ -44,7 +46,6 @@ struct PlayerStats {
   PlayerStats(int _h, int _a, int _m): health(_h), armor(_a), mana(_m) {}
 };
 
-// NOTE: Having this as enum class didn't work, but normal enum does
 enum class GameResult : int {
   LOWEST = -999999, WIN = 5, LOSS = 6, HIGHEST = 999999
 };
@@ -64,13 +65,9 @@ public:
 public:
   /* Create an ftxui component to store the visuals for player effects */
   Component MakeEffectsContainer();
-  /* Create an ftxui component to store the visuals for player stats */
   Component MakeStatsContainer();
-  /* Create an ftxui component to store the visuals for player card grid */
   Component MakeCardGrid();
-  /* Create an ftxui component to store the visuals for player card queue */
   Component MakeCardQueue();
-  /* Create an ftxui component to store the player's current wins and losses in order */
   Component MakeWinsLossesSortedList();
 
 public:
@@ -104,6 +101,10 @@ private:
   PlayerStats stats;
   bool pressed[BUTTON_COUNT];
   bool isActiveTurn;
+  
+private:
+  std::random_device rd;
+  std::uniform_int_distribution<int> dist;
 };
 
 #endif

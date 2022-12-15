@@ -1,6 +1,8 @@
 #include "../include/PlayerPane.hpp"
+#include "../include/util/RandomUtil.hpp"
 #include <string.h>
 
+// Attempt at an ostream operator for GameResult
 std::ostream& operator<<(std::ostream& os, const GameResult& gr) {
   switch (gr) {
   case GameResult::LOWEST: os << "Lowest (N/A)"; break;
@@ -13,7 +15,7 @@ std::ostream& operator<<(std::ostream& os, const GameResult& gr) {
 }
 
 PlayerPane::PlayerPane(bool isTurn)
-:card_ht("tombstone", "empty"), card_selection(4), wins_losses([](GameResult a, GameResult b) { return a <= b; }, GameResult::LOWEST, GameResult::HIGHEST), player_effects(), pressed(), isActiveTurn(isTurn), stats(10, 0, 5) {
+:card_ht("tombstone", "empty"), card_selection(4), wins_losses([](GameResult a, GameResult b) { return a <= b; }, GameResult::LOWEST, GameResult::HIGHEST), player_effects(), pressed(), isActiveTurn(isTurn), stats(10, 0, 5), rd(), dist(0, 5) {
   cardTypes[0] = "Poison";
   cardTypes[1] = "Health";
   cardTypes[2] = "Shield";
@@ -27,11 +29,6 @@ PlayerPane::PlayerPane(bool isTurn)
   
   // randomize the cards that start in your deck
   RandomizeCardsInInventory();
-  
-  // wins_losses.Insert(GameResult::WIN);
-  // wins_losses.Insert(GameResult::WIN);
-  // wins_losses.Insert(GameResult::LOSS);
-  // wins_losses.Insert(GameResult::WIN);
   
   // callback that decides what happens when a card is pressed
   card_select_callback = [&](int index) {
@@ -91,6 +88,7 @@ Component PlayerPane::MakeStatsContainer() {
       // Data for turn indicator
       Color turnIndicatorColor = isActiveTurn ? Color::Green : Color::Red;;
       std::string turnIndicatorString = isActiveTurn ? "It is your turn" : "It is not your turn";
+
       // Data for stats
       Element s = hbox({
         text("[Stats]  ") | color(Color::Cyan),
@@ -100,7 +98,10 @@ Component PlayerPane::MakeStatsContainer() {
       });
     
       return vbox({
-        text(turnIndicatorString) | color(turnIndicatorColor),
+        hbox({
+          text("[Turn]   ") | color(Color::Cyan),
+          text(turnIndicatorString) | color(turnIndicatorColor),
+        }),
         separator(),
         s
       });
@@ -120,6 +121,12 @@ Component PlayerPane::MakeCardGrid() {
     Button(cards.at(4), [&] { card_select_callback(4); }, ButtonOption::Simple()) | size(WIDTH, EQUAL, 15) | size(HEIGHT, EQUAL, 8),
     Button(cards.at(5), [&] { card_select_callback(5); }, ButtonOption::Simple()) | size(WIDTH, EQUAL, 15) | size(HEIGHT, EQUAL, 8)
   });
+  auto title = Renderer([&] {
+    return vbox({
+      text("[Card Grid]") | color(Color::Cyan)
+    });    
+  });
+  card_grid->Add(title);
   card_grid->Add(row1);
   card_grid->Add(row2);
   return card_grid;
@@ -266,13 +273,16 @@ const ClosedHashTable<std::string, CardInfo>& PlayerPane::GetCardInfoHT() {
   return this->card_ht;
 }
 
+// =====================================================================================
+// RandomizeCardsInInventory function for PlayerPane
+//   - Notes
+//     \__ 
+// =====================================================================================
 void PlayerPane::RandomizeCardsInInventory() {
-  // NOTE: Figure out this random number generator
-  srand(time(NULL));
+  RandomInt random;
   cards.clear();
   for (int i = 0; i < 6; i++) {
-    int index = rand() % 4; // from RandomUtil.hpp
-    cards.push_back(cardTypes[index]);
-    std::cout << cardTypes[index]; 
+    cards.push_back(cardTypes[random.GetRandomInt(0, CARD_TYPE_AMOUNT-1)]);
+    // std::cout << cardTypes[index]; 
   }
 }
