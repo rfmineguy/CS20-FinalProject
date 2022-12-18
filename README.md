@@ -34,3 +34,4 @@ cd build && ./card_battle
 
 ## Notes
 - Tested in the cmorenolpc/lpc-cs20 docker image [SUCCESSFULLY]
+- The final report PDF document is called `Final Report PDF.pdf`, in the repo's root directory
