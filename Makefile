@@ -1,6 +1,6 @@
 CC := g++
-CFLAGS := -Wall -std=c++11 -ggdb
-CFLAGS_HARSH := -Wall -Wextra -Werror -std=c++11 -ggdb
+CFLAGS := -Wall -std=c++11
+CFLAGS_HARSH := -Wall -Wextra -Werror -std=c++11
 
 TEST_MAIN_SRC := src/test_main.cpp
 TEST_SRC 	  := include/CircularQueue.hpp

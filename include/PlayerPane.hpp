@@ -69,6 +69,7 @@ public:
   Component MakeCardGrid();
   Component MakeCardQueue();
   Component MakeWinsLossesSortedList();
+  Component MakeDebugActionStack();
 
 public:
   bool IsActiveTurn() const;
@@ -86,7 +87,7 @@ public:
   DoubleLinkedStack<std::shared_ptr<PlayerEffect>>& GetPlayerEffectsStack();
   SortedList<GameResult>& GetWinsLossesList();
   const ClosedHashTable<std::string, CardInfo>& GetCardInfoHT();
-
+  
 private:
   void RandomizeCardsInInventory();
   
@@ -101,6 +102,9 @@ private:
   PlayerStats stats;
   bool pressed[BUTTON_COUNT];
   bool isActiveTurn;
+
+private:
+  DoubleLinkedStack<std::string> debug_action_stack;
 };
 
 #endif

@@ -44,8 +44,6 @@ private:
   T atRec(Node*, int, int) const;
   Node* atRecNode(Node*, int, int) const;
   int insertNormalRec(Node*&, T elem, int current);
-  int insertRecLeft(Node*&, T elem, int current);
-  int insertRecRight(Node*&, T elem, int current);
 
 private:
   std::function<bool(T, T)> sortRule;

@@ -12,7 +12,6 @@ int main() {
   srand(time(nullptr));
   int turn = rand() % 2;
   PlayerPane pane1(turn);      // param determines weather this player starts
-  srand(time(nullptr));
   PlayerPane pane2(!turn);
   
   //============================================================================
@@ -23,6 +22,7 @@ int main() {
   auto pane1_stats = pane1.MakeStatsContainer();
   auto pane1_effects = pane1.MakeEffectsContainer();
   auto pane1_wins_losses_sorted_list = pane1.MakeWinsLossesSortedList();
+  auto pane1_debug_action_stack = pane1.MakeDebugActionStack();
   auto pane1_renderer = Renderer(Container::Vertical({pane1_card_grid}), [&] {
     return vbox({
       pane1_stats->Render() | borderRounded,
@@ -30,6 +30,7 @@ int main() {
       pane1_card_queue->Render() | borderRounded,
       pane1_card_grid->Render() | borderRounded,
       pane1_wins_losses_sorted_list->Render() | borderRounded,
+      pane1_debug_action_stack->Render() | borderRounded
     });
   });
   
@@ -41,13 +42,15 @@ int main() {
   auto pane2_stats = pane2.MakeStatsContainer();
   auto pane2_effects = pane2.MakeEffectsContainer();
   auto pane2_wins_losses_sorted_list = pane2.MakeWinsLossesSortedList();
+  auto pane2_debug_action_stack = pane1.MakeDebugActionStack();
   auto pane2_renderer = Renderer(Container::Vertical({pane2_card_grid}), [&] {
     return vbox({
-      pane2_stats->Render() | border,
-      pane2_effects->Render() | border,
-      pane2_card_queue->Render() | border,
-      pane2_card_grid->Render() | border,
-      pane2_wins_losses_sorted_list->Render() | border,
+      pane2_stats->Render() | borderRounded,
+      pane2_effects->Render() | borderRounded,
+      pane2_card_queue->Render() | borderRounded,
+      pane2_card_grid->Render() | borderRounded,
+      pane2_wins_losses_sorted_list->Render() | borderRounded,
+      pane2_debug_action_stack->Render() | borderRounded
     });
   });
   

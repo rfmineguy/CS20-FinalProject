@@ -1,6 +1,7 @@
 #ifndef EFFECTS_HPP
 #define EFFECTS_HPP
 #include <string>
+#include "../util/RandomUtil.hpp"
 
 //============================================================================
 // Base effect class
@@ -49,5 +50,21 @@ public:
   
 private:
   int shieldAmount;
+};
+
+//============================================================================
+// Shield effect specialty class
+//============================================================================
+class SwordEffect : public PlayerEffect {
+public:
+  SwordEffect(): SwordEffect(0) {
+    RandomInt r;
+    swordDamage = r.GetRandomInt(0, 3);
+  }
+  SwordEffect(int _swordDamage): PlayerEffect("Sword"), swordDamage(_swordDamage) {};
+  int GetSwordAmount() const { return swordDamage; }
+  
+private:
+  int swordDamage;
 };
 #endif

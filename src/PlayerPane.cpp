@@ -2,7 +2,7 @@
 #include "../include/util/RandomUtil.hpp"
 #include <string.h>
 
-// Attempt at an ostream operator for GameResult
+// Attempt at an ostream operator for GameResult (Required for successful compilation)
 std::ostream& operator<<(std::ostream& os, const GameResult& gr) {
   switch (gr) {
   case GameResult::LOWEST: os << "Lowest (N/A)"; break;
@@ -21,14 +21,22 @@ PlayerPane::PlayerPane(bool isTurn)
   cardTypes[2] = "Shield";
   cardTypes[3] = "Sword";
 
-  // Insert the various known card types
+  // Insert the various known card types into the hashtable
   card_ht.Insert(cardTypes[0], CardInfo(std::make_shared<PoisonEffect>(), 2));
   card_ht.Insert(cardTypes[1], CardInfo(std::make_shared<HealingEffect>(), 2));
   card_ht.Insert(cardTypes[2], CardInfo(std::make_shared<ShieldEffect>(2), 1));
-  card_ht.Insert(cardTypes[3], CardInfo(nullptr, 1));
+  card_ht.Insert(cardTypes[3], CardInfo(std::make_shared<SwordEffect>(), 1));
   
   // randomize the cards that start in your deck
   RandomizeCardsInInventory();
+  
+  // wins_losses.Insert(GameResult::WIN);
+  // wins_losses.Insert(GameResult::LOSS);
+  // wins_losses.Insert(GameResult::WIN);
+  
+  debug_action_stack.Push("Hi");
+  debug_action_stack.Push("Bye");
+  debug_action_stack.Push("Hi");
   
   // callback that decides what happens when a card is pressed
   card_select_callback = [&](int index) {
@@ -61,6 +69,7 @@ Component PlayerPane::MakeEffectsContainer() {
         player_effects.Pop();
         size--;
         
+        // This is the first time I've tried this, and Im not sure how good this is to do.
         #define SHIELD_CAST(effect) std::dynamic_pointer_cast<ShieldEffect>(effect)
         #define HEALTH_CAST(effect) std::dynamic_pointer_cast<HealingEffect>(effect)
         #define POISON_CAST(effect) std::dynamic_pointer_cast<PoisonEffect>(effect)
@@ -124,7 +133,7 @@ Component PlayerPane::MakeCardGrid() {
   auto title = Renderer([&] {
     return vbox({
       text("[Card Grid]") | color(Color::Cyan)
-    });    
+    });
   });
   card_grid->Add(title);
   card_grid->Add(row1);
@@ -170,6 +179,26 @@ Component PlayerPane::MakeWinsLossesSortedList() {
   });
 }
 
+Component PlayerPane::MakeDebugActionStack() {
+  return Renderer([&] {
+    // std::vector<Element> elements;
+    // int size = debug_action_stack.Size();
+    // while (size > 0) {
+    //   std::string s = debug_action_stack.Peek();
+    //   debug_action_stack.Pop();
+    //   
+    //   elements.push_back(hbox({text(s)}));
+    //   
+    //   debug_action_stack.Push(s);
+    // }
+    // return hbox({
+    //   text("[Actions]  ") | color(Color::Cyan),
+    //   vbox({elements})
+    // });
+    return hbox({});
+  });
+}
+
 bool PlayerPane::IsActiveTurn() const {
   return this->isActiveTurn;
 }
@@ -188,6 +217,7 @@ void PlayerPane::PerformActions(PlayerPane& other_pane) {
   // this should only happen this it is this player's turn and NOT the other player's turn
   // the OTHER player is attacking THIS player
   if (IsActiveTurn() && !other_pane.IsActiveTurn()) {
+    this->GetCardSelectionQueue().Clear();
     CircularQueue<std::string>& q = other_pane.GetCardSelectionQueue();
     const ClosedHashTable<std::string, CardInfo>& ht = other_pane.GetCardInfoHT();
     while (q.Size() != 0) {
@@ -212,26 +242,40 @@ void PlayerPane::PerformActions(PlayerPane& other_pane) {
       }
     }
     
-    std::shared_ptr<PlayerEffect> e = GetPlayerEffectsStack().Peek();
-    GetPlayerEffectsStack().Pop();
-
-    std::shared_ptr<PoisonEffect> peffect = std::dynamic_pointer_cast<PoisonEffect>(e);
-    std::shared_ptr<HealingEffect> heffect = std::dynamic_pointer_cast<HealingEffect>(e);
-    std::shared_ptr<ShieldEffect> seffect = std::dynamic_pointer_cast<ShieldEffect>(e);
-    if (peffect != nullptr) {
-      stats.health -= peffect->GetPoisonDamage();
-    }
-    if (heffect != nullptr) {
-      stats.health += heffect->GetHealAmount();
-      if (stats.health >= 10) {
-        stats.health = 10;
+    try {
+      std::shared_ptr<PlayerEffect> e = GetPlayerEffectsStack().Peek();
+      GetPlayerEffectsStack().Pop();
+      std::shared_ptr<PoisonEffect> peffect = std::dynamic_pointer_cast<PoisonEffect>(e);
+      std::shared_ptr<SwordEffect> sweffect = std::dynamic_pointer_cast<SwordEffect>(e);
+      std::shared_ptr<HealingEffect> heffect = std::dynamic_pointer_cast<HealingEffect>(e);
+      std::shared_ptr<ShieldEffect> seffect = std::dynamic_pointer_cast<ShieldEffect>(e);
+      if (sweffect != nullptr) {
+        stats.health -= sweffect->GetSwordAmount();
       }
-    }
-    if (seffect != nullptr) {
-      stats.armor += seffect->GetShieldAmount();
-      if (stats.armor >= 10) {
-        stats.armor = 10;
+      if (peffect != nullptr) {
+        stats.health -= peffect->GetPoisonDamage();
       }
+      if (heffect != nullptr) {
+        stats.health += heffect->GetHealAmount();
+        if (stats.health >= 10) {
+          stats.health = 10;
+        }
+      }
+      if (seffect != nullptr) {
+        stats.armor += seffect->GetShieldAmount();
+        if (stats.armor >= 10) {
+          stats.armor = 10;
+        }
+      }
+      RandomizeCardsInInventory();
+      std::stringstream ss;
+      ss << "stats";
+      ss << "{health = " << stats.health << ", ";
+      ss << "armor = " << stats.armor << ", ";
+      ss << "mana = " << stats.mana << "}\n";
+      std::cerr << ss.str();
+    } catch (...) {
+      
     }
   }
   
@@ -277,9 +321,11 @@ const ClosedHashTable<std::string, CardInfo>& PlayerPane::GetCardInfoHT() {
 // RandomizeCardsInInventory function for PlayerPane
 //   - Notes
 //     \__ 
+//   - Analysis
+//     \__ O(n) Clears and randomizes 
 // =====================================================================================
 void PlayerPane::RandomizeCardsInInventory() {
-  RandomInt random;
+  static RandomInt random;
   cards.clear();
   for (int i = 0; i < 6; i++) {
     cards.push_back(cardTypes[random.GetRandomInt(0, CARD_TYPE_AMOUNT-1)]);
