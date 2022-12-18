@@ -209,6 +209,7 @@ bool PlayerPane::IsDead() const {
 
 void PlayerPane::ToggleTurn() {
   this->isActiveTurn = !this->isActiveTurn;
+  memset(this->pressed, 0, BUTTON_COUNT);
   RandomizeCardsInInventory();
 }
 
@@ -250,7 +251,15 @@ void PlayerPane::PerformActions(PlayerPane& other_pane) {
       std::shared_ptr<HealingEffect> heffect = std::dynamic_pointer_cast<HealingEffect>(e);
       std::shared_ptr<ShieldEffect> seffect = std::dynamic_pointer_cast<ShieldEffect>(e);
       if (sweffect != nullptr) {
-        stats.health -= sweffect->GetSwordAmount();
+        //armor = 4
+        //swd_amt = 5
+        if (stats.armor - sweffect->GetSwordAmount() < 0) {
+          stats.health -= sweffect->GetSwordAmount() - stats.armor;
+          stats.armor = 0;
+        }
+        else {
+          stats.armor -= sweffect->GetSwordAmount();
+        }
       }
       if (peffect != nullptr) {
         stats.health -= peffect->GetPoisonDamage();
