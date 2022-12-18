@@ -31,3 +31,6 @@ mkdir build && cd build && cmake .. && make
 ```bash
 cd build && ./card_battle
 ```
+
+## Notes
+- Tested in the cmorenolpc/lpc-cs20 docker image [SUCCESSFULLY]
